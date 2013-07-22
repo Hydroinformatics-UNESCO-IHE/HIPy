@@ -14,7 +14,7 @@ from numpy import linalg
 
 
 def KrigInterp(ModOpt,POI,Loc,VarFunArr,xopt,k,CovMea,MeaRow):
-    # Calculate distances between stations        
+    #Check for singularities in covariance matrix
     SVr = numpy.array(CovMea)
     if linalg.det(CovMea) == 0:
         print('Non-singular covriance matrix - Sorry, cannot invert')
@@ -24,6 +24,7 @@ def KrigInterp(ModOpt,POI,Loc,VarFunArr,xopt,k,CovMea,MeaRow):
     POID = numpy.zeros([len(POI),len(Loc)])
     SVm = numpy.zeros([len(POI),len(Loc)])
     
+    # Calculate distances between stations     
     for i in xrange(0,len(POI)):
         for j in xrange(0,len(Loc)):
             # Calculate distance from target to stations
