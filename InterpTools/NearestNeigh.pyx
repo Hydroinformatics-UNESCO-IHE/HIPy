@@ -3,7 +3,7 @@
 Nearest Neighborhood
 """
 
-import numpy
+from numpy import min, argmin
 
 def main(ndarray[numpy.float, ndim=1] dist,
          ndarray[numpy.float, ndim=1] val):
