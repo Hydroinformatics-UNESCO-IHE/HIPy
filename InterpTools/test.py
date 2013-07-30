@@ -10,6 +10,7 @@ pyximport.install()
 import IDW
 import Kriging
 import DataLoad
+import NearestNeigh
 
 def tIDW():
     '''
@@ -34,3 +35,13 @@ def tKrig():
     Z, SP, ZAvg = Kriging.Krig(5.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
                                VarFunArr,0 ,20)
     return 'Kriging working fine!'
+    
+def tNear():
+    '''
+    Nearest Neighborhood test    
+    '''
+    Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
+                                       'TestData\InterpPts.csv',
+                                       'TestData\Dataset.csv')
+    Z, Zavg = NearestNeigh.Interp_bat(Loc, POI, Prec, 0, 20)
+    return 'Nearest neighborhood working fine!'

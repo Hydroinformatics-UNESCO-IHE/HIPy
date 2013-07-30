@@ -47,6 +47,7 @@ def Interp_bat(Loc, POI, Prec, power=2.0, cutoff=0.00001, tmin=0, tmax='def'):
     ZAvg = []    
     if tmax == 'def':
         tmax = len(Prec)
+        
     Loc = numpy.array(Loc)
     POI = numpy.array(POI)    
     
@@ -68,4 +69,4 @@ def simple_IDW(SiteInfo, XYTargets, DataRecord):
     Z, ZAvg = Interp_bat(Loc, POI, Prec)
     DataSave.spkl(Z, 'PrecField')
     DataSave.spkl(ZAvg, 'AvgPrec')
-    return Z, ZAvg
+    return 'IDW done'
