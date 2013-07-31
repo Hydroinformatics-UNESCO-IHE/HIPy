@@ -39,7 +39,8 @@ def Interp(x, y, val, xt, yt, power=2.0, cutoff=0.00001):
     
     return R
 
-def Interp_bat(Loc, POI, Prec, power=2.0, cutoff=0.00001, tmin=0, tmax='def'):
+def Interp_bat(Loc, POI, Prec, power=2.0, cutoff=0.00001, tmin=0, tmax='def',
+               valmin=-1e99, valmax=1e99):
     '''
     Parser for interpolation of several scenarios.
     '''
@@ -58,7 +59,8 @@ def Interp_bat(Loc, POI, Prec, power=2.0, cutoff=0.00001, tmin=0, tmax='def'):
     yt = POI[:,1]
     
     for i in xrange(tmin,tmax):
-        temp = Interp(x,y,Prec[i],xt,yt,power,cutoff)        
+        temp = Interp(x,y,Prec[i],xt,yt,power,cutoff)
+        numpy.clip(temp,valmin,valmax)        
         Z.append(temp)
         ZAvg.append(numpy.average(temp))
         

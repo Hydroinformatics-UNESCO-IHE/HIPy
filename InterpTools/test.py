@@ -11,6 +11,9 @@ import IDW
 import Kriging
 import DataLoad
 import NearestNeigh
+import Linear
+import Cubic
+import RBF
 
 def tIDW():
     '''
@@ -45,3 +48,33 @@ def tNear():
                                        'TestData\Dataset.csv')
     Z, Zavg = NearestNeigh.Interp_bat(Loc, POI, Prec, 0, 20)
     return 'Nearest neighborhood working fine!'
+    
+def tLinear():
+    '''
+    Nearest Neighborhood test    
+    '''
+    Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
+                                       'TestData\InterpPts.csv',
+                                       'TestData\Dataset.csv')
+    Z, Zavg = Linear.Interp_bat(Loc, POI, Prec, 0, 20)
+    return 'Linear Interpolation working fine!'
+
+def tCubic():
+    '''
+    Nearest Neighborhood test    
+    '''
+    Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
+                                       'TestData\InterpPts.csv',
+                                       'TestData\Dataset.csv')
+    Z, Zavg = Cubic.Interp_bat(Loc, POI, Prec, 0, 20)
+    return 'Cubic Interpolation working fine!'
+
+def tRBF():
+    '''
+    Nearest Neighborhood test    
+    '''
+    Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
+                                       'TestData\InterpPts.csv',
+                                       'TestData\Dataset.csv')
+    Z, Zavg = RBF.Interp_bat(Loc, POI, Prec, 0, 20)
+    return 'Radial Basis Function Interpolation working fine!'
