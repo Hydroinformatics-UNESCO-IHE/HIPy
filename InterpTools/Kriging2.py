@@ -195,57 +195,44 @@ def Krig(MaxDist, POIC, Loc, Prec, CovMea, ModOpt, xopt,
     
     tmin = int(tmin)
     tmax = int(tmax)
-    # Reduce measurements to relevant locations for the targets    
-    POIDred = numpy.zeros([len(POIC),len(Loc)])
-    for k in xrange(0,len(POIC)):
-        for j in xrange(0,len(Loc)):
-            # Calculate distance from target to stations
-            POIDred[k][j] = numpy.sqrt((POIC[k][0]-Loc[j][0])**2 +
-                                       (POIC[k][1]-Loc[j][1])**2 )
-    
-    # Check if there are enough stations for interpolation, otherwise, increase 
-    # the search radius
-#    POIDt = numpy.transpose(POIDred)
-    POIDt = POIDred[:]
-    RedLoc = [] #initialise to jump for the first time in the cycle
-    while len(RedLoc) <= MinNumSt:
-       
-        #Minimum distance reduction
-        RedLoc = [] #Reduced Location of sensors
-        RedPrec = [] #Reduced data from sensors
-        PlaceLoc = [] #Station number list to be leftout
-        for k in xrange(len(Loc)):
-            if min(POIDt[k]) > MaxDist:
-                PlaceLoc.append(k)
+    PrecSec = Prec[tmin:tmax]
+    # Reduce measurements to relevant locations for the targets
+    for kk in xrange(0,len(POIC)):
+
+        # Check if there are enough stations for interpolation, otherwise, increase 
+        # the search radius
+    #    POIDt = numpy.transpose(POIDred)
+        POIDt = Dist.tar(Loc, POIC[kk])
+        TNS = 0
+        while TNS <= MinNumSt:
+            #Minimum distance reduction
+            PlaceLoc = [i for i,v in enumerate(POIDt) if v > MaxDist]
+            TNS = len(Loc)-len(PlaceLoc)
+            MaxDist = MaxDist + 1.0
+        
+        # Trimming of Precipitation data and Covariance matrix (reduced matrices)            
         RedLoc = numpy.delete(Loc,PlaceLoc,0)
-        MaxDist = MaxDist + 1.0
-    
-    # Trimming of Precipitation data and Covariance matrix (reduced matrices)
-#    RedPrec = numpy.delete(Prec,PlaceLoc,1)    
-    RedPrec = Prec[:]
-    RedCov = CovMea[:]    
-#    RedCov = numpy.delete(RedCov,PlaceLoc,0)
-#    RedCov = numpy.delete(RedCov,PlaceLoc,1)
-    print RedCov
-    print RedLoc
-    # Kriging interpolation
-    Z = []
-    ZAvg = []
-    SP = []
-    f = numpy.zeros(len(POIC)) #Line of zeros if no data exists
-    for ii in xrange(tmin,tmax):
-        if max(RedPrec[ii]) == 0:
-            Z.append(f)
-            SP.append(f)
-            ZAvg.append(0)
-        else:
-            TempRes = Kriging_core(ModOpt,POIC,RedLoc,VarFunArr,
-                                              xopt,RedCov,RedPrec[ii])
-            Z.append(TempRes[0])
-            SP.append(TempRes[1])
-            ZAvg.append(numpy.average(TempRes[0]))
+        RedPrec = numpy.delete(PrecSec,PlaceLoc,1)    
+        RedCov = CovMea[:]    
+        RedCov = numpy.delete(RedCov,PlaceLoc,0)
+        RedCov = numpy.delete(RedCov,PlaceLoc,1)
+        
+        # Kriging interpolation
+        Z = []
+        ZAvg = []
+        SP = []
+        f = numpy.zeros(len(POIC)) #Line of zeros if no data exists
+
+
+        TempRes = Kriging_core(ModOpt,POIC,RedLoc,VarFunArr,
+                                          xopt,RedCov,RedPrec[ii])
+        Z.append(TempRes[0])
+        SP.append(TempRes[1])
+        ZAvg.append(numpy.average(TempRes[0]))
         if ii%100 == 0:
             print 'Interpolated precipitation register '+ str(ii)
+        **** estamos haciendo esto target-wise*******
+            
     return Z, SP, ZAvg
 
 

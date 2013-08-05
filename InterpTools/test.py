@@ -35,9 +35,11 @@ def tKrig():
                       
     SVExp, CovMea = Kriging.exp_semivariogram(Prec, Loc)
     xopt, ModOpt, VarFunArr = Kriging.theor_variogram(SVExp)
-    Z, SP, ZAvg = Kriging.Krig(5.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
-                               VarFunArr,0 ,20)
-    return 'Kriging working fine!'
+    Z, SP, ZAvg = Kriging.Krig(10.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
+                               VarFunArr,10 ,11)
+    print Z
+    print ZAvg
+    return Z, ZAvg, CovMea
     
 def tNear():
     '''
@@ -61,7 +63,7 @@ def tLinear():
 
 def tCubic():
     '''
-    Nearest Neighborhood test    
+    Cubic interpolator test
     '''
     Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
                                        'TestData\InterpPts.csv',
@@ -71,7 +73,7 @@ def tCubic():
 
 def tRBF():
     '''
-    Nearest Neighborhood test    
+    Radial basis function test    
     '''
     Loc, POI, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
                                        'TestData\InterpPts.csv',

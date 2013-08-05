@@ -268,7 +268,7 @@ def HBVCalibPre(P, Flow, AvgPrec, Temper, Et,LLTemp, P2, St, WU):
     g = []
     for i in xrange(len(Flow)):
         v = [AvgPrec[i],Temper[i],Et[i],LLTemp[i]]
-        HBVOut = main(P,P2,v,St2)
+        HBVOut = Run(P,P2,v,St2)
         if HBVOut[0] < 0:
             fail = 1
             return 10000, g, fail
