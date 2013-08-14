@@ -6,6 +6,31 @@ y - recorded value
 q - Quality tag (0-1)
 """
 import numpy
+# constants import 
+
+# Or something similar,.... like importing a module of contants 
+#or something
+ERROR_CODE = 9999
+
+# Example
+def is_valid(x, y, *q):
+    '''
+    x 
+    y
+    q
+    '''
+    if len(x) != len(y):
+        print 'Calculated and recorded series do not match'
+        return False
+    return True
+    
+def MAE2(x,y,*q):
+    if is_valid(x,y,q): 
+        cdef float F = (1./sum(q))*numpy.abs(numpy.sum(x-y))
+    else: 
+        return -9999
+    return F
+    
 
 def DataValid(x,y,*q):
     if len(x) != len(y):
