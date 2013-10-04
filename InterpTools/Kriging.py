@@ -281,9 +281,10 @@ def Kriging_core(ModOpt,sPOI,Loc,VarFunArr,xopt,CovMea,Prec,KrigType):
         for i in xrange(0,len(Prec)):
             Ztemp = numpy.dot(WM[:-1],Prec[i])
             Ztemp = numpy.clip(Ztemp,0,max(Prec[i])) # cutoff at 0 and max prec
-            Z.append(Ztemp)        
-        S = xopt[0]*numpy.ones(len(SVm))-SVm
-        SP = xopt[0] - (numpy.dot(WM,numpy.transpose(S))) - WM[-1]
+            Z.append(Ztemp)
+
+        S = xopt[0]*numpy.ones(len(SVm)-1)-SVm[:-1]
+        SP = xopt[0] - (numpy.dot(WM[:-1],numpy.transpose(S))) - WM[-1]
         
     elif KrigType is 'Sim':
     #Simple Kriging
@@ -342,7 +343,7 @@ def Krig(MaxDist, POI, Loc, Prec, CovMea, ModOpt, xopt,
     tmin = int(tmin)
     tmax = int(tmax)
     PrecSec = Prec[tmin:tmax]
-    
+
     # Reduce measurements to relevant locations for the targets
     Z = []
     SP = []
@@ -357,16 +358,18 @@ def Krig(MaxDist, POI, Loc, Prec, CovMea, ModOpt, xopt,
             PlaceLoc = [i for i,v in enumerate(POIDt) if v > MaxDist2]
             TNS = len(Loc)-len(PlaceLoc)
             MaxDist2 += 1.0
+
         # Reduction of relevant stations (reduced data and cov matrices)            
         RedLoc = numpy.delete(Loc,PlaceLoc,0)
         RedPrec = numpy.delete(PrecSec,PlaceLoc,1)    
         RedCov = CovMea[:]    
         RedCov = numpy.delete(RedCov,PlaceLoc,0)
         RedCov = numpy.delete(RedCov,PlaceLoc,1)
-        
+
         # Kriging interpolation
         TempRes = Kriging_core(ModOpt,POI[kk],RedLoc,VarFunArr,
                                           xopt,RedCov,RedPrec,KrigType)
+
         if Z == []:
             Z = numpy.vstack(TempRes[0])
         else:
@@ -417,10 +420,10 @@ def test():
     SVExp, CovMea = exp_semivariogram(Prec, Loc)
     xopt, ModOpt, VarFunArr = theor_variogram(SVExp)
     Z, SP, ZAvg = Krig(10.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
-                               VarFunArr,10 ,20, 'Ord')
+                               VarFunArr,10 ,20, 3, 'Ord')
     print 'Ordinary Kriging working fine'
     
     Z, SP, ZAvg = Krig(10.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
-                               VarFunArr,10 ,20, 'Sim')
+                               VarFunArr,10 ,20, 3, 'Sim')
     print 'Simple Kriging working fine'
     return 'Ended normally, module should be working properly'

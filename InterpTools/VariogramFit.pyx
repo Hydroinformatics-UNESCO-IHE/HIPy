@@ -33,7 +33,7 @@ def SVExponential(h,x):
     cdef float N = x[2]   
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if h/R > 3:
         return N+S
     try:
@@ -48,7 +48,7 @@ def SVGaussian(h,x):
     cdef float N = x[2]
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if h/R > 1:
         return N+S
     try:
@@ -63,7 +63,7 @@ def SVPower(h,x):
     cdef float a = x[3]
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if a > 2:
         a = 2
     try:
@@ -78,7 +78,7 @@ def SVSpherical(h,x):
     cdef float N = x[2]
     cdef float SV, hr
     if h == 0:
-        return 0
+        return S
     if h > R:
         return N+S
     hr = 1.*h/R
@@ -91,7 +91,7 @@ def SVCubic(h,x):
     cdef float N = x[2]
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if h > R:
         return N+S
     SV = S - (N + S * (7*numpy.power((1.*h/R),2.)-(35./4)*numpy.power(1.*h/R,3.)+
@@ -104,7 +104,7 @@ def SVPentaspherical(h,x):
     cdef float N = x[2]
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if h > R:
         return N+S
     SV = S - (N + S * ((15./8)*(1.*h/R)-(5./4)*numpy.power(1.*h/R,3)+
@@ -117,7 +117,9 @@ def SVSinehole(h,x):
     cdef float N = x[2]
     cdef float SV
     if h == 0:
-        return 0
+        return S
+    if h > R:
+        h = R
     SV = S - (N + S * (1.-numpy.sin(numpy.pi*1.*h/R)/(numpy.pi*1.*h/R)))
     return SV
 
@@ -128,7 +130,7 @@ def SVMatern(h,x):
     cdef float v = x[4]
     cdef float SV
     if h == 0:
-        return 0
+        return S
     if v < 0:
         return 9999
     if h/R > 3:

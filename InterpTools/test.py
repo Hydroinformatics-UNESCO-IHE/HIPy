@@ -7,6 +7,7 @@ Created on Mon Jul 29 17:27:42 2013
 
 import pyximport
 pyximport.install()
+import KrigingP
 import IDW
 import Kriging
 import DataLoad
@@ -15,6 +16,7 @@ import Linear
 import Cubic
 import RBF
 import numpy
+
 
 def tIDW():
     '''
@@ -42,7 +44,24 @@ def tKrig():
     print Z
     print ZAvg
     return Z, ZAvg, CovMea
-    
+
+def tKrigP():
+    '''
+    Kriging test    
+    '''
+    Loc, POIC, Prec = DataLoad.lcsv('TestData\GaugeLoc.csv',
+                                       'TestData\InterpPts.csv',
+                                       'TestData\Dataset.csv')
+    Loc = numpy.array(Loc)/1000.0
+    POIC = numpy.array(POIC)/1000.0
+    SVExp, CovMea = KrigingP.exp_semivariogram(Prec, Loc)
+    xopt, ModOpt, VarFunArr = KrigingP.theor_variogram(SVExp)
+    Z, SP, ZAvg = KrigingP.Krig(10.0, POIC, Loc, Prec, CovMea, ModOpt, xopt, 
+                               VarFunArr,10 ,11, 'Ord')
+    print Z
+    print ZAvg
+    return 
+
 def tNear():
     '''
     Nearest Neighborhood test    

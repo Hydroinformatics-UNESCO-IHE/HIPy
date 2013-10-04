@@ -219,7 +219,7 @@ def theor_variogram(SVExp, Sb=(0.01,400), Rb=(2,20), Nb=(0,400),
         VarProb.addVar('Rank (v)','c',lower=vb[0],upper=vb[1],value=vr)
         
         args = (SVExp, j, VarFunArr, Var, Res, Mdl)
-        optmz = ALHSO(pll_type='POA')
+        optmz = ALHSO()
         optmz.setOption('fileout',0)
         optmz(VarProb)
     
@@ -273,7 +273,7 @@ def Kriging_core(ModOpt,sPOI,Loc,VarFunArr,xopt,CovMea,Prec,KrigType):
         SVr = numpy.array(CovMea)
         if linalg.det(CovMea) == 0:
             print('Non-singular covriance matrix - Sorry, cannot invert \n')
-            return(9999,9999)
+            return 9999*numpy.ones(len(Prec)), 9999*numpy.ones(len(Prec))
         InvSVr = linalg.inv(SVr)
 
         Z = []        
@@ -282,15 +282,16 @@ def Kriging_core(ModOpt,sPOI,Loc,VarFunArr,xopt,CovMea,Prec,KrigType):
             Ztemp = numpy.dot(WM[:-1],Prec[i])
             Ztemp = numpy.clip(Ztemp,0,max(Prec[i])) # cutoff at 0 and max prec
             Z.append(Ztemp)        
-        S = xopt[0]*numpy.ones(len(SVm))-SVm
-        SP = xopt[0] - (numpy.dot(WM,numpy.transpose(S))) - WM[-1]
+#        S = xopt[0]*numpy.ones(len(SVm)-1)-SVm[:-1]
+        S = SVm[:-1]
+        SP = xopt[0] - (numpy.dot(WM[:-1],numpy.transpose(S))) - WM[-1]
         
     elif KrigType is 'Sim':
     #Simple Kriging
         SVr = numpy.array(CovMea)
         if linalg.det(CovMea) == 0:
             print('Non-singular covriance matrix - Sorry, cannot invert \n')
-            return(9999,9999)
+            return 9999*numpy.ones(len(Prec)), 9999*numpy.ones(len(Prec))
         InvSVr = linalg.inv(SVr)
         
         Z = []        
@@ -365,8 +366,7 @@ def Krig(MaxDist, POI, Loc, Prec, CovMea, ModOpt, xopt,
         RedCov = numpy.delete(RedCov,PlaceLoc,1)
         
         # Kriging interpolation
-        TempRes = Kriging_core(ModOpt,POI[kk],RedLoc,VarFunArr,
-                                          xopt,RedCov,RedPrec,KrigType)
+        TempRes = Kriging_core(ModOpt,POI[kk],RedLoc,VarFunArr, xopt,RedCov,RedPrec,KrigType)
         if Z == []:
             Z = numpy.vstack(TempRes[0])
         else:

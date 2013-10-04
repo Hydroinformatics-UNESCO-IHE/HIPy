@@ -114,7 +114,7 @@ def Soil(double FC,double BETA,double ETF,double T,double TM,double ECORR,
     
     cdef double R, EPInt, EA, CF, SMNew, UZInt1
     R = ((SMOld/FC)** BETA) * IN
-    EPInt = EP*ECORR
+    EPInt = (1.0+ETF*(T-TM))*ECORR*EP
     
     if SMOld/(LP*FC) < 1.0: 
         EA = TFAC*(SMOld/(LP*FC))*EPInt 

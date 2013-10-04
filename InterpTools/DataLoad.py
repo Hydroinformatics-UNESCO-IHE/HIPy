@@ -90,3 +90,15 @@ def lpkl(SiteInfo, XYTargets, DataRecord):
         print 'Measurements and stations are not compatible. Please check your\
                 data'
     return Loc, POI, Prec
+    
+def slpkl(Datafile):
+    '''
+    Load data from PKL files as presented in the description into working files
+    inside the module. No data processing taking place here. PKL is faster to
+    load than CSV in python.
+    '''
+    with open(Datafile,'r') as foo:
+        VarName = cPickle.load(foo)
+    print 'Variable Imported'
+    print ''
+    return VarName
