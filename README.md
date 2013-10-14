@@ -21,3 +21,5 @@ For the use of these tools you might need so far...:
 Regards,
 
 Juan Chacon
+
+This toolbox is being initially developed within the EU-WP7 WeSenseIt project (http://wesenseit.com/)
