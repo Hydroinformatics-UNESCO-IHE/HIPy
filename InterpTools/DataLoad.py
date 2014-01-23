@@ -64,6 +64,21 @@ def lcsv(SiteInfo, XYTargets, DataRecord):
         print 'Measurements and stations are not compatible. Please check your\
                 data'
     return Loc, POI, Prec
+
+def scsv(SiteInfo):
+    '''
+    Load data from CSV files as presented in the description into working files
+    inside the module. No data processing taking place here.
+    '''
+    Loc = []
+    with open(SiteInfo,'rb') as SiteInfo:
+        Lines = csv.reader(SiteInfo)
+        Lines.next()
+        for row in Lines:
+            Loc.append([float(row[0]),float(row[1])])
+    print 'Variable Imported'
+    print ''
+    return Loc
     
 def lpkl(SiteInfo, XYTargets, DataRecord):
     '''

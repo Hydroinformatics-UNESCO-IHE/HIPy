@@ -5,14 +5,15 @@ Kriging Interpolation
 =====================
 Implemented by Juan Chacon @ UNESCO-IHE
 Integrated Water Systems and Governance Department
-Hydroinformatics Core
+Hydroinformatics Laboratory
 
-This library simple and ordinary Kriging interpolation. Other Kriging\
-applications such as universal kriging or universal Kriging, will be\
-implemented in a posterior stage.
+This library simple and ordinary and simple Kriging interpolation. Other \
+applications such as Kriging with external drift and universal Kriging will \
+not be directly implemented, since they can be derived out of the previous \
+implementations.
 
 * Pre requisites
-    you will need the following libraries, not coming alongside with the\ 
+    you will need the following libraries, not coming alongside with the \ 
     Anaconda ditribution (recommended)
 
     * pyOpt - Optimisation engine, used to solve the semivariogram fitting  
@@ -20,19 +21,19 @@ implemented in a posterior stage.
 * Functions
     * exp_semivariogram: Computes experimental semivariogram
     * theor_variogram: Adjust theoretical to experimental semivariogram
-    * Kriging_core: Performs data parsing and preprocessing for kriging\
+    * Kriging_core: Performs data parsing and preprocessing for kriging \
     interpolation
-    * Krig: Solves the Kriging system and returns location-wise estimates of\
+    * Krig: Solves the Kriging system and returns location-wise estimates of \
     points of interest
-    * simple_Krig: Simple inteface for Kriging interpolation, by reading\
+    * simple_Krig: Simple inteface for Kriging interpolation, by reading \
     standard csv files of data, and generating pkl of interpolation results
-    * test: Test for Kriging module to see if everything is running as it\
+    * test: Test for Kriging module to see if everything is running as it \
     should
 
 * Use policy
     * you should include the respective citation to the authors
     * if you find this tool usefull, you will give the main author a beer next\
-    time you see him/her :)
+     time you see him/her :)
     
 * References
     * http://people.ku.edu/~gbohling/cpe940/Kriging.pdf
@@ -52,12 +53,6 @@ from pyOpt import ALHSO, Optimization
 import DataSave
 import DataLoad
 
-#try:
-#    from mpi4py import MPI
-#    comm = MPI.COMM_WORLD
-#    myrank = comm.Get_rank()
-#except:
-#    raise ImportError('mpi4py is required for parallelization')
 #------------------------------------------------------------------------------
 def Regul(lag,cov,minbin,maxdist):
     '''
@@ -76,7 +71,6 @@ def Regul(lag,cov,minbin,maxdist):
         **lag2 -- vector holding the regularised bin location \n
         **cov2 -- vector holding the regularised average of the variable in\
         the bin
-    
     '''
     maxdif = numpy.max(lag) #always starting from 0
     numbind = (maxdif / maxdist)

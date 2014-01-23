@@ -5,14 +5,14 @@ Kriging Interpolation
 =====================
 Implemented by Juan Chacon @ UNESCO-IHE
 Integrated Water Systems and Governance Department
-Hydroinformatics Core
+Hydroinformatics Laboratory
 
-This library simple and ordinary Kriging interpolation. Other Kriging\
-applications such as universal kriging or universal Kriging, will be\
+This library simple and ordinary Kriging interpolation. Other Kriging \
+applications such as universal kriging or universal Kriging, will be \
 implemented in a posterior stage.
 
 * Pre requisites
-    you will need the following libraries, not coming alongside with the\ 
+    you will need the following libraries, not coming alongside with the \ 
     Anaconda ditribution (recommended)
 
     * pyOpt - Optimisation engine, used to solve the semivariogram fitting  
@@ -20,23 +20,22 @@ implemented in a posterior stage.
 * Functions
     * exp_semivariogram: Computes experimental semivariogram
     * theor_variogram: Adjust theoretical to experimental semivariogram
-    * Kriging_core: Performs data parsing and preprocessing for kriging\
+    * Kriging_core: Performs data parsing and preprocessing for kriging \
     interpolation
-    * Krig: Solves the Kriging system and returns location-wise estimates of\
+    * Krig: Solves the Kriging system and returns location-wise estimates of \
     points of interest
-    * simple_Krig: Simple inteface for Kriging interpolation, by reading\
+    * simple_Krig: Simple inteface for Kriging interpolation, by reading \
     standard csv files of data, and generating pkl of interpolation results
-    * test: Test for Kriging module to see if everything is running as it\
+    * test: Test for Kriging module to see if everything is running as it \
     should
 
 * Use policy
-    * you should include the respective citation to the authors
-    * if you find this tool usefull, you will give the main author a beer next\
+    * You should include the respective citation to the authors
+    * If you find this tool usefull, you will give the main author a beer next\
     time you see him/her :)
     
 * References
     * http://people.ku.edu/~gbohling/cpe940/Kriging.pdf
-
 """
 #Libraries to be imported
 #------------------------------------------------------------------------------
@@ -52,16 +51,10 @@ from pyOpt import ALHSO, Optimization
 import DataSave
 import DataLoad
 
-#try:
-#    from mpi4py import MPI
-#    comm = MPI.COMM_WORLD
-#    myrank = comm.Get_rank()
-#except:
-#    raise ImportError('mpi4py is required for parallelization')
 #------------------------------------------------------------------------------
 def Regul(lag,cov,minbin,maxdist):
     '''
-    Regularises data for semivariogram computation by selecting a minimum\
+    Regularises data for semivariogram computation by selecting a minimum \
     number of bins or a maximum distance criteria for bin size.
     
     Parameters
@@ -74,9 +67,8 @@ def Regul(lag,cov,minbin,maxdist):
     Returns
     -------
         **lag2 -- vector holding the regularised bin location \n
-        **cov2 -- vector holding the regularised average of the variable in\
+        **cov2 -- vector holding the regularised average of the variable in \
         the bin
-    
     '''
     maxdif = numpy.max(lag) #always starting from 0
     numbind = (maxdif / maxdist)
@@ -108,13 +100,13 @@ def exp_semivariogram(Prec, Loc):
     Parameters
     ----------
         **Prec** -- Value vector ``[n,x]`` for which semivariogram is going to\
-        be calculated \n
-        **Loc** -- Vector of size ``[x,2]`` in which are stored the *x* and\ 
+         be calculated \n
+        **Loc** -- Vector of size ``[x,2]`` in which are stored the *x* and \ 
         *y* location
     
     Returns
     -------
-        **SVExp** -- Experimental semivariogram vector ``[x,2]`` with lag and\
+        **SVExp** -- Experimental semivariogram vector ``[x,2]`` with lag and \
         semivariogram \n
         **CovMea** -- Covariance matrix ``[x,x]`` between stations 
     '''

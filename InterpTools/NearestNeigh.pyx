@@ -8,7 +8,6 @@ import Dist
 import DataLoad
 import DataSave
 
-
 def Interp(x,y,val,xt,yt):  
     
     vect = numpy.transpose(numpy.vstack((x,y)))
@@ -21,7 +20,36 @@ def Interp(x,y,val,xt,yt):
         R.append(val[cst[i]])
     
     return R
+    
+def Interp_eff(Loc, POI, Prec, tmin=0, tmax='def'):
+    '''
+    output is organised as 
+    '''
+    Loc = numpy.array(Loc)
+    POI = numpy.array(POI)   
+    Prec = numpy.array(Prec)
+    
+    x = Loc[:,0]
+    y = Loc[:,1]
+    
+    xt = POI[:,0]
+    yt = POI[:,1]
+    
+    if tmax == 'def':
+        tmax = len(Prec)
+    
+    Z = numpy.zeros([len(Prec),len(POI)])
+    vect = numpy.transpose(numpy.vstack((x,y)))
+    vecttar = numpy.transpose(numpy.vstack((xt,yt)))
+    dis = Dist.target(vect, vecttar)
+    cst = numpy.argmin(dis,1)
+    
+    for i in xrange(0,len(POI)):        
+        Z[:,i] = Prec[:,cst[i]]
 
+    ZAvg = numpy.average(Z,1)
+    return Z, ZAvg
+    
 def Interp_bat(Loc, POI, Prec, tmin=0, tmax='def'):
     Z = []
     ZAvg = []    

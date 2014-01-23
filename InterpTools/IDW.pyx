@@ -1,8 +1,31 @@
 # -*- coding: utf-8 -*-
-"""
-IDW
-"""
 '''
+================================
+Inverse distance weighting (IDW)
+================================
+
+Implemented by Juan Chacon @ UNESCO-IHE
+Integrated Water Systems and Governance Department
+Hydroinformatics Laboratory
+
+This library contains tools for interpolation using inverse distance weighting.
+
+* Pre requisites
+    you will need the following libraries, not coming alongside with the \ 
+    Anaconda ditribution (recommended)
+
+* Functions
+    *Interp
+    *Interp_bat
+
+* Use policy
+    * You should include the respective citation to the authors
+    * If you find this tool usefull, you will give the main author a beer next\
+    time you see him/her :)
+    
+* References
+    * http://people.ku.edu/~gbohling/cpe940/Kriging.pdf
+
 dist - vector with distances to interpolation target
 val - Measured values at given data points
 power - power of interpolation weighting
@@ -17,6 +40,16 @@ def Interp(x, y, val, xt, yt, power=2.0, cutoff=0.00001):
     '''
     Algorithm for IDW interpolation. This contains the main build to perform
     interpolation using any type of IDW procedure.
+    
+    Parameters
+    ----------
+        **x --
+        **y --
+        **val --
+        **xt --
+        **yt --
+        **power --
+        **cutoff --
     '''
     vect = numpy.transpose(numpy.vstack((x,y)))
     vecttar = numpy.transpose(numpy.vstack((xt,yt)))
@@ -65,10 +98,3 @@ def Interp_bat(Loc, POI, Prec, power=2.0, cutoff=0.00001, tmin=0, tmax='def',
         ZAvg.append(numpy.average(temp))
         
     return Z, ZAvg
-
-def simple_IDW(SiteInfo, XYTargets, DataRecord):
-    Loc, POI, Prec = DataLoad.lcsv(SiteInfo, XYTargets, DataRecord)
-    Z, ZAvg = Interp_bat(Loc, POI, Prec)
-    DataSave.spkl(Z, 'PrecField')
-    DataSave.spkl(ZAvg, 'AvgPrec')
-    return 'IDW done'
