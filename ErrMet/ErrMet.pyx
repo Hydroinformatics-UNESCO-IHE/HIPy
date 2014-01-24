@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Performance Functions
+
+Reference to the methods:
+
+P Krause, DP Boyle, F Bäse. Comparison of different efficiency criteria for 
+hydrological model assessment. Advances in Geosciences.5, 89-97, EGU 2005.
+
 x - calculated value
 y - recorded value
 q - Quality tag (0-1)
@@ -12,39 +18,6 @@ import scipy.stats
 # Or something similar,.... like importing a module of contants 
 #or something
 ERROR_CODE = -9999
-
-# Example
-def is_valid(x, y, q):
-    '''
-    x - calculated value
-    y - recorded value
-    q - Quality tag (0-1)
-    '''
-    if len(x) != len(y):
-        print 'Calculated and recorded series do not match'
-        return False
-        
-    if len(q) != len(y):
-        print 'Quality tags do not match with measurements'
-        return False
-    
-    return True
-    
-def MAE2(x,y,*q):
-    
-    '''
-    x - calculated value
-    y - recorded value
-    q - Quality tag (0-1)
-    '''
-    
-    cdef float F
-    if is_valid(x,y,q): 
-         F = (1./sum(q))*numpy.abs(numpy.sum(x-y))
-    else: 
-        return ERROR_CODE
-    return F
-    
 
 def DataValid(x,y,q):
     """
@@ -274,7 +247,30 @@ def NSE(x,y,q='def',j=2.0):
     b = numpy.sum(numpy.power(y-numpy.average(y),j)*q)
     cdef float F = 1.0 - a/b
     return F
+
+def LNSE(x,y,q='def',j=2.0):
+    """
+    Performance Functions
+    x - calculated value
+    y - recorded value
+    q - Quality tag (0-1)
+    j - exponent to modify the inflation of the variance (standard NSE j=2)
+    """
+    if q is 'def':
+        q = numpy.ones(len(y))   
+
+    x,y,q = DataValid(x,y,q)
+    if min(x) == ERROR_CODE:
+        return ERROR_CODE
     
+    x = numpy.log(x)
+    y = numpy.log(y)
+    
+    a = numpy.sum(numpy.power(x-y,j)*q)
+    b = numpy.sum(numpy.power(y-numpy.average(y),j)*q)
+    cdef float F = 1.0 - a/b
+    return F
+
 def RNSE(x,y,q='def',j=2.0):
     """
     Performance Functions
@@ -312,6 +308,7 @@ def IOA(x,y,q='def',j=2.0):
     a = numpy.sum(numpy.power(numpy.subtract(x,y)*q,j))
     b = numpy.sum(numpy.power(numpy.abs(numpy.subtract(x,y)*q)+numpy.abs(numpy.subtract(y,numpy.average(y))*q),j))
     cdef float F = 1.0 - a/b
+    return F
 
 def RIOA(x,y,q='def',j=2.0):
     """
@@ -330,6 +327,7 @@ def RIOA(x,y,q='def',j=2.0):
     a = numpy.sum(numpy.power(numpy.subtract(x,y)*q/y,j))
     b = numpy.sum(numpy.power(numpy.abs(numpy.subtract(x,y)*q/y)+numpy.abs(numpy.subtract(y,numpy.average(y))*q/y),j))
     cdef float F = 1.0 - a/b
+    return F
     
 def PearsonR(x,y,q='def'):
     """
@@ -346,6 +344,57 @@ def PearsonR(x,y,q='def'):
         return ERROR_CODE
         
     return scipy.stats.pearsonr(x,y)[0]
+
+def SpearmanR(x,y,q='def'):
+    """
+    Performance Functions
+    x - calculated value
+    y - recorded value
+    q - Quality tag (0-1)
+    """
+    if q is 'def':
+        q = numpy.ones(len(y))   
+
+    x,y,q = DataValid(x,y,q)
+    if min(x) == ERROR_CODE:
+        return ERROR_CODE
+        
+    return scipy.stats.spearmanr(x,y)[0]
+
+def DetCoef(x,y,q='def'):
+    """
+    Performance Functions
+    x - calculated value
+    y - recorded value
+    q - Quality tag (0-1)
+    """
+    if q is 'def':
+        q = numpy.ones(len(y))   
+
+    x,y,q = DataValid(x,y,q)
+    if min(x) == ERROR_CODE:
+        return ERROR_CODE
+        
+    return numpy.power(scipy.stats.pearsonr(x,y)[0],2)
+
+def COP(x,y,q='def'):
+    """
+    Performance Functions
+    x - calculated value
+    y - recorded value
+    q - Quality tag (0-1)
+    """
+    if q is 'def':
+        q = numpy.ones(len(y))   
+
+    x,y,q = DataValid(x,y,q)
+    if min(x) == ERROR_CODE:
+        return ERROR_CODE
+    
+    a = numpy.sum(numpy.power(numpy.subtract(y[1:]-x[1:])*q,2))
+    b = numpy.sum(numpy.power(numpy.subtract(y[1:]-y[:-1])*q,2))
+    cdef float F = 1.0 - a/b
+    return F
 
 def KGE(x,y,q='def',s=[1,1,1]):
     """
