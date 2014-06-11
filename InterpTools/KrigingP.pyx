@@ -43,13 +43,14 @@ import pyximport
 pyximport.install()
 import VariogramFit
 import Dist
-
+import scipy.special
 import numpy
 from numpy import linalg
 import random
 from pyOpt import ALHSO, Optimization
 import DataSave
 import DataLoad
+import time
 
 #------------------------------------------------------------------------------
 def Regul(lag,cov,minbin,maxdist):
@@ -118,14 +119,14 @@ def exp_semivariogram(Prec, Loc):
     
     ## Measurement covariance
     CovMea = numpy.cov(numpy.transpose(WetMeas))
-    if linalg.det(CovMea) == 0:
-        print 'Warning, Covariance Matrix is non-signular. Check your data \n'
-    else:
-        print 'Determinant Covariance Matrix', str(linalg.det(CovMea)), '\n'
-    print ''
+#    if linalg.det(CovMea) == 0:
+##        print 'Warning, Covariance Matrix is non-signular. Check your data \n'
+#    else:
+#        print 'Determinant Covariance Matrix', str(linalg.det(CovMea)), '\n'
+#    print ''
 
     Dis = Dist.between(Loc)
-    print 'Distance Matrix - Done \n'
+#    print 'Distance Matrix - Done \n'
     
     ## Experimental Semivariogram
     SVExp = []
@@ -135,14 +136,14 @@ def exp_semivariogram(Prec, Loc):
             Lag = Dis[i][j]
             SVExp.append([Lag,Cov])
             
-    print 'Experimental semivariogram - Done \n'
+#    print 'Experimental semivariogram - Done \n'
     SVExp = numpy.array(SVExp)
     Lag2, Cov2 = Regul(SVExp[:,0],SVExp[:,1],15,1)
     SVExp = numpy.transpose(numpy.vstack((Lag2,Cov2)))
     return SVExp, CovMea
 
 def theor_variogram(SVExp, Sb=(0.01,400), Rb=(2,20), Nb=(0,400),
-                  ab=(0,2), vb=(0,1000)):
+                  ab=(0,2), vb=(0,1000),VarFunArr='def',optFunNam='def'):
     '''
     Fitting of theoretical variogram
     Parameters
@@ -163,15 +164,18 @@ def theor_variogram(SVExp, Sb=(0.01,400), Rb=(2,20), Nb=(0,400),
         **ModOpt** -- Pointer to optimal vector location \n
         **VarFunArr** -- Array with pointer to functions in VariogramFit module
     '''                      
-    # Array with functions to be called from the Variograms library
-    VarFunArr = [VariogramFit.SVExponential, VariogramFit.SVGaussian, 
-                 VariogramFit.SVSpherical, VariogramFit.SVCubic,
-                 VariogramFit.SVPentaspherical, VariogramFit.SVSinehole, 
-                 VariogramFit.SVPower]
     
+    if VarFunArr is 'def':
+        # Array with functions to be called from the Variograms library
+        VarFunArr = [VariogramFit.SVExponential, VariogramFit.SVGaussian, 
+                     VariogramFit.SVSpherical, VariogramFit.SVCubic,
+                     VariogramFit.SVPentaspherical, VariogramFit.SVSinehole, 
+                     VariogramFit.SVPower]
+     
+    if optFunNam is 'def':
     # Names of functions for display only
-    optFunNam = ['Exponential','Gaussian','Spherical','Cubic',
-                 'Pentaspherical','Sinehole','Power','Matern']
+        optFunNam = ['Exponential','Gaussian','Spherical','Cubic',
+                     'Pentaspherical','Sinehole','Power','Matern']
     
     # Initial seed for variogram fit
     sr = random.uniform(Sb[0],Sb[1])
@@ -188,19 +192,20 @@ def theor_variogram(SVExp, Sb=(0.01,400), Rb=(2,20), Nb=(0,400),
         F, g, fail = VariogramFit.optFunMaster(x,SVExp,j,VarFunArr)
         if F == 9999:
             fail = 1
+
         else:
             Var.append(x)
             Res.append(F)
             Mdl.append(j)
         return F, g, fail
         
-    print 'Initialising Variogram fit \n'
+#    print 'Initialising Variogram fit \n'
     
     # Optimisation starts to minimise differences between experimental and 
     # theoretical semivariograms
     for j in xrange(0,len(VarFunArr)):
         
-        print 'Variogram Fitting ' + optFunNam[j] + '\n'
+#        print 'Variogram Fitting ' + optFunNam[j] + '\n'
         
         VarProb = Optimization('Variogram Fitting: ' + optFunNam[j], OptFun)
         VarProb.addObj('RMSE')
@@ -215,16 +220,15 @@ def theor_variogram(SVExp, Sb=(0.01,400), Rb=(2,20), Nb=(0,400),
         optmz.setOption('fileout',0)
         optmz(VarProb)
     
-        print VarProb.solution(0)
-        print ''    
+#        print VarProb.solution(0)
+#        print 'Variogram adjusted at ' + time.ctime()
     
     # Get pointer to best semivariogram
     k = numpy.argmin(Res)
     xopt = Var[k]
     ModOpt = Mdl[k]
     
-    print 'Theoretical variogram fit - Done! \n'
-    print 'range is equal to: ' + str(xopt[1]) + '\n'
+    # print 'Theoretical variogram fit - Done! at ' + time.ctime()
     return xopt, ModOpt, VarFunArr
 
 def Kriging_core(ModOpt,sPOI,Loc,VarFunArr,xopt,CovMea,Prec,KrigType):

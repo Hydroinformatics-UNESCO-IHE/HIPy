@@ -122,8 +122,7 @@ def RSR(x,y,q='def'):
         
     Erro = numpy.square(x-y)*q    
     Erro2 = numpy.square(y-numpy.average(y))*q
-    cdef float F = numpy.sqrt(1.*numpy.sum(Erro)/(numpy.sum(q)))/
-                    numpy.sqrt(1.*numpy.sum(Erro2))
+    cdef float F = numpy.sqrt(1.*numpy.sum(Erro)/(numpy.sum(q)))/numpy.sqrt(1.*numpy.sum(Erro2))
     return F
     
 def RSD(x,y,q='def'):
@@ -154,7 +153,7 @@ def Bias(x,y,q='def'):
     if q is 'def':
         q = numpy.ones(len(y))
     
-    x,y,q = DataValid(x,y,*q)
+    x,y,q = DataValid(x,y,q)
     if min(x) == ERROR_CODE:
         return ERROR_CODE
     
@@ -171,7 +170,7 @@ def PBias(x,y,q='def'):
     if q is 'def':
         q = numpy.ones(len(y))
     
-    x,y,q = DataValid(x,y,*q)
+    x,y,q = DataValid(x,y,q)
     if min(x) == ERROR_CODE:
         return ERROR_CODE
         
@@ -188,7 +187,7 @@ def MAE(x,y,q='def'):
     if q is 'def':
         q = numpy.ones(len(y))    
     
-    x,y,q = DataValid(x,y,*q)
+    x,y,q = DataValid(x,y,q)
     if min(x) == ERROR_CODE:
         return ERROR_CODE
     cdef float F = (1./sum(q))*numpy.abs(numpy.sum(x-y))
@@ -204,7 +203,7 @@ def MSE(x,y,q='def'):
     if q is 'def':
         q = numpy.ones(len(y))    
     
-    x,y,q = DataValid(x,y,*q)
+    x,y,q = DataValid(x,y,q)
     if min(x) == ERROR_CODE:
         return ERROR_CODE    
     Erro = numpy.square(x-y)*q    
@@ -221,7 +220,7 @@ def PercVol(x,y,q='def'):
     if q is 'def':
         q = numpy.ones(len(y))   
     
-    x,y,q = DataValid(x,y,*q)
+    x,y,q = DataValid(x,y,q)
     if min(x) == ERROR_CODE:
         return ERROR_CODE
     cdef float sy = numpy.sum(y)
