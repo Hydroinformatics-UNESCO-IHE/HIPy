@@ -97,7 +97,7 @@ def lpkl(SiteInfo, XYTargets, DataRecord):
     print ''    
             
     with open(DataRecord,'rb') as Data:
-        Prec = Loc = cPickle.load(Data)
+        Prec = cPickle.load(Data)
     print 'Data, Imported'
     print ''
     

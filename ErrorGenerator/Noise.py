@@ -49,8 +49,8 @@ def Brown(x,a):
 
 def Test():
     Data = numpy.zeros(1000)
-    WNoisy = White(Data,10)
-    plt.plot(WNoisy)
+#    WNoisy = White(Data,10)
+#    plt.plot(WNoisy)
 #    plt.show()
     
     PNoisy = Pink(Data,10)
