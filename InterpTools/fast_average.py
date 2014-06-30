@@ -10,7 +10,7 @@ Hydroinformatics Laboratory
 Average precipitation from multiple stations
 
 * Pre requisites
-    you will need the following libraries, not coming alongside with the\ 
+    you will need the following libraries, not coming alongside with the\
     Anaconda ditribution (recommended)
 
 * Functions
@@ -21,49 +21,55 @@ Average precipitation from multiple stations
     * you should include the respective citation to the authors
     * if you find this tool usefull, you will give the main author a beer next\
     time you see him :)
-    
+
 * References
     * Lindström et al., “Development and Test of the Distributed HBV-96\
     Hydrological Model.”
 """
 import numpy
 
-def Run(Data, Covariance='def'):
+
+def Run(data, covariance=None):
     '''
-    Calculates average precipitation from several stations. Data consists in\
-    a matrix element containing all the precipitation from the stations. If\
+    Calculates spatial average from several stations. Data consists in\
+    a matrix element containing all the recordas from the stations. If\
     covariance matrix can be provided it can be passed as an optional argument.
-    
+
     Paramters
     ----------
-        **Data** -- Matrix of recordings from stations. Data has to be\
+        **data** -- Matrix of recordings from stations. data has to be\
         oriented column wise
-        
-        **Covariance** -- Matrix of covariance between stations. If it is not\
-        provided, Covariance data will be calculated out of the given dataset.
-        
+
+        **covariance** -- Matrix of covariance between stations. If it is not\
+        provided, covariance data will be calculated out of the given dataset.
+
     Results
     -------
-        **AData** -- Average precipitation based on punctual readings, for all\
+        **spatial_average** -- Average precipitation based on punctual \
+        readings, for all\
         the precipitation events in the serie.
     '''
-    if Covariance is 'def':    
-        Covariance = numpy.cov(numpy.transpose(Data))
-    
-    Data = numpy.array(Data)
-    if numpy.linalg.det(Covariance) == 0:
-        print 'Singular covariance matrix... cannot make it'
-        return 9999*numpy.ones(len(Data))
-    PGuess = numpy.average(Data,1) #initial guess of average precipitation 
-    WSt = []
-    for i in xrange(0,len(Covariance)):
-        WSt.append(numpy.cov(Data[:,i],PGuess)[0][1])
-    WSI = numpy.dot(numpy.linalg.inv(Covariance),WSt)
-    
-    AData = []
-    for i in xrange(0,len(Data)):
-        AData.append(PGuess[i] + numpy.dot(WSI,Data[i,:]-PGuess[i]))
-    AData = numpy.clip(AData,0,max(AData))
-    
-    return AData
+    if covariance is None:
+        covariance = numpy.cov(numpy.transpose(data))
 
+    data = numpy.array(data)
+    if numpy.linalg.det(covariance) == 0:
+        print 'Singular covariance matrix... cannot make it'
+        return 9999*numpy.ones(len(data))
+
+    pre_average_guess = numpy.average(data, 1)
+    station_weights = []
+    for i in xrange(len(covariance)):
+        station_weights.append(numpy.cov(data[:, i], pre_average_guess)[0][1])
+    station_weights_updated = numpy.dot(numpy.linalg.inv(covariance),
+                                        station_weights)
+
+    spatial_average = []
+    for i in xrange(len(data)):
+        spatial_average.append(pre_average_guess[i] +
+                               numpy.dot(station_weights_updated, data[i, :] -
+                               pre_average_guess[i]))
+
+    spatial_average = numpy.clip(spatial_average, 0, max(spatial_average))
+
+    return spatial_average
